@@ -3,10 +3,6 @@ import { Timeline } from '@/components/Timeline';
 import { SceneTable } from '@/components/SceneTable';
 import Link from 'next/link';
 
-interface Props {
-  params: { slug: string; actorId: string };
-}
-
 export const dynamic = 'force-dynamic';
 
 // Supabase からの結合結果用の簡易型
@@ -30,7 +26,7 @@ type SceneJoin = {
   };
 };
 
-export default async function ActorPage({ params }: Props) {
+export default async function ActorPage({ params }: { params: { slug: string; actorId: string } }) {
   const supabase = supabaseBrowser();
 
   // 出演者情報 + 企画情報取得
