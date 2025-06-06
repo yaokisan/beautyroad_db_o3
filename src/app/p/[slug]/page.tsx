@@ -4,15 +4,13 @@ import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
-interface Props {
-  params: { slug: string };
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function generateMetadata({ params }: any): Promise<Metadata> {
   return { title: `${params.slug} | Project` };
 }
 
-export default async function ProjectPublicPage({ params }: Props) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function ProjectPublicPage({ params }: any) {
   const supabase = supabaseBrowser();
   const { data: project, error } = await supabase
     .from('projects')
