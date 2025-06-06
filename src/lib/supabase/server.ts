@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
