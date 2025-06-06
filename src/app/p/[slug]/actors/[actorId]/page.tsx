@@ -9,6 +9,27 @@ interface Props {
 
 export const dynamic = 'force-dynamic';
 
+// Supabase からの結合結果用の簡易型
+type SceneActorRow = {
+  actor_id: string;
+  duty: string | null;
+  actors: {
+    name: string;
+  } | null;
+};
+
+type SceneJoin = {
+  scenes: {
+    id: string;
+    title: string;
+    start_at: string | null;
+    end_at: string | null;
+    script_url: string | null;
+    note: string | null;
+    scene_actors: SceneActorRow[];
+  };
+};
+
 export default async function ActorPage({ params }: Props) {
   const supabase = supabaseBrowser();
 
@@ -29,19 +50,21 @@ export default async function ActorPage({ params }: Props) {
     return <p className="p-6">出演者が見つかりません</p>;
   }
 
-  const sceneData = actor.scenes?.map((sa) => {
-    const { scenes, duty } = sa as any; // 型生成省略
+  // Supabase 型が自動生成されていないため `unknown` 経由でキャスト
+  const sceneData = (actor.scenes as unknown as SceneJoin[] | undefined)?.map((sa) => {
+    const { scenes } = sa;
     return {
       id: scenes.id,
       title: scenes.title,
-      start_at: scenes.start_at,
-      end_at: scenes.end_at,
+      // null の場合は空文字にして型を合わせる
+      start_at: scenes.start_at ?? '',
+      end_at: scenes.end_at ?? '',
       script_url: scenes.script_url,
       note: scenes.note,
       confirmed: Boolean(scenes.start_at && scenes.end_at),
-      actors: scenes.scene_actors?.map((sca: any) => ({
+      actors: scenes.scene_actors?.map((sca: SceneActorRow) => ({
         id: sca.actor_id,
-        name: sca.actors?.name,
+        name: sca.actors?.name ?? '',
         duty: sca.duty,
       })),
     };
