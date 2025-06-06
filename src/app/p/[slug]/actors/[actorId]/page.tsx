@@ -26,12 +26,9 @@ type SceneJoin = {
   };
 };
 
-type ActorPageProps = {
-  params: { slug: string; actorId: string } | Promise<{ slug: string; actorId: string }>;
-  searchParams?: Record<string, string | string[] | undefined>;
-};
-
-export default async function ActorPage({ params }: ActorPageProps) {
+// 型互換エラーを避けるため、Next.js の PageProps 制約を満たしつつ any で受け取る
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function ActorPage({ params }: any) {
   const resolvedParams = (await Promise.resolve(params)) as {
     slug: string;
     actorId: string;
