@@ -26,7 +26,17 @@ type SceneJoin = {
   };
 };
 
-export default async function ActorPage({ params }: { params: { slug: string; actorId: string } }) {
+type ActorPageProps = {
+  params: { slug: string; actorId: string } | Promise<{ slug: string; actorId: string }>;
+  searchParams?: Record<string, string | string[] | undefined>;
+};
+
+export default async function ActorPage({ params }: ActorPageProps) {
+  const resolvedParams = (await Promise.resolve(params)) as {
+    slug: string;
+    actorId: string;
+  };
+
   const supabase = supabaseBrowser();
 
   // 出演者情報 + 企画情報取得
@@ -36,7 +46,7 @@ export default async function ActorPage({ params }: { params: { slug: string; ac
       `id, name, in_time_min, in_time_max, out_time_min, out_time_max,
        scenes:scene_actors(scene_id, duty, scenes!inner(id, title, start_at, end_at, script_url, note, scene_actors(actor_id, actors(name))))`
     )
-    .eq('id', params.actorId)
+    .eq('id', resolvedParams.actorId)
     .single();
 
   if (error) {
@@ -68,7 +78,7 @@ export default async function ActorPage({ params }: { params: { slug: string; ac
 
   return (
     <div className="mx-auto max-w-3xl p-6 space-y-6">
-      <Link href={`/p/${params.slug}`} className="text-sm text-blue-600 underline">
+      <Link href={`/p/${resolvedParams.slug}`} className="text-sm text-blue-600 underline">
         ← プロジェクトトップへ
       </Link>
       <h1 className="text-2xl font-bold">{actor.name} さんの出演情報</h1>
